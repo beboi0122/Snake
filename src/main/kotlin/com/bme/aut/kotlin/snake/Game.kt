@@ -1,5 +1,6 @@
-package com.example
+package com.bme.aut.kotlin.snake
 
+import com.example.getResource
 import javafx.animation.AnimationTimer
 import javafx.application.Application
 import javafx.event.EventHandler
@@ -10,14 +11,15 @@ import javafx.scene.canvas.GraphicsContext
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
+import javafx.scene.paint.Paint
 import javafx.stage.Stage
 
 class Game : Application() {
+    private lateinit var field: Field
+    val fieldSize = 16
 
-    companion object {
-        private const val WIDTH = 512
-        private const val HEIGHT = 512
-    }
+    private val WIDTH = fieldSize * 32
+    private val HEIGHT = fieldSize * 32
 
     private lateinit var mainScene: Scene
     private lateinit var graphicsContext: GraphicsContext
@@ -25,8 +27,8 @@ class Game : Application() {
     private lateinit var space: Image
     private lateinit var sun: Image
 
-    private var sunX = WIDTH / 2
-    private var sunY = HEIGHT / 2
+    private var sunX = WIDTH / 3
+    private var sunY = HEIGHT / 3
 
     private var lastFrameTime: Long = System.nanoTime()
 
@@ -46,6 +48,8 @@ class Game : Application() {
         prepareActionHandlers()
 
         graphicsContext = canvas.graphicsContext2D
+
+        field = Field(graphicsContext, fieldSize)
 
         loadGraphics()
 
@@ -69,29 +73,28 @@ class Game : Application() {
     }
 
     private fun loadGraphics() {
-        // prefixed with / to indicate that the files are
-        // in the root of the "resources" folder
-        space = Image(getResource("/space.png"))
         sun = Image(getResource("/sun.png"))
     }
-
+    var timeNano: Long = 0
     private fun tickAndRender(currentNanoTime: Long) {
         // the time elapsed since the last frame, in nanoseconds
         // can be used for physics calculation, etc
         val elapsedNanos = currentNanoTime - lastFrameTime
         lastFrameTime = currentNanoTime
+        timeNano += elapsedNanos
 
         // clear canvas
         graphicsContext.clearRect(0.0, 0.0, WIDTH.toDouble(), HEIGHT.toDouble())
 
-        // draw background
-        graphicsContext.drawImage(space, 0.0, 0.0)
+        field.draw()
 
-        // perform world updates
         updateSunPosition()
 
-        // draw sun
-        graphicsContext.drawImage(sun, sunX.toDouble(), sunY.toDouble())
+        if(timeNano >= 100_000_000){
+            field.snake.move()
+            timeNano = 0
+        }
+
 
         // display crude fps counter
         val elapsedMs = elapsedNanos / 1_000_000
@@ -103,16 +106,16 @@ class Game : Application() {
 
     private fun updateSunPosition() {
         if (currentlyActiveKeys.contains(KeyCode.LEFT)) {
-            sunX--
+            field.snake.lookLeft()
         }
         if (currentlyActiveKeys.contains(KeyCode.RIGHT)) {
-            sunX++
+            field.snake.lookRight()
         }
         if (currentlyActiveKeys.contains(KeyCode.UP)) {
-            sunY--
+            field.snake.lookUp()
         }
         if (currentlyActiveKeys.contains(KeyCode.DOWN)) {
-            sunY++
+            field.snake.lookDown()
         }
     }
 
