@@ -3,28 +3,29 @@ package com.bme.aut.kotlin.snake.snake
 class Head (val fieldSize: Int ,posX: Int, posY: Int) : Body(null, posX, posY,15, 80, 0) {
     var looking: Direction = Direction.RIGHT
     var lastMove: Direction = Direction.RIGHT
+    var dead: Boolean = false
 
     fun moveRight(){
         if( posX + 1 == fieldSize)
-            println("DEAD")
+            posX = 0
         else
             posX++
     }
     fun moveLeft(){
         if( posX == 0)
-            println("DEAD")
+            posX = fieldSize-1
         else
             posX--
     }
     fun moveUp(){
         if( posY == 0)
-            println("DEAD")
+            posY = fieldSize-1
         else
             posY--
     }
     fun moveDown(){
         if( posY + 1 == fieldSize)
-            println("DEAD")
+            posY = 0
         else
             posY++
     }
@@ -49,5 +50,13 @@ class Head (val fieldSize: Int ,posX: Int, posY: Int) : Body(null, posX, posY,15
         }
     }
 
+    fun gonnaDie(): Boolean{
+        return when(looking){
+            Direction.UP -> posY == 0
+            Direction.DOWN -> posY + 1 == fieldSize
+            Direction.RIGHT -> posX + 1 == fieldSize
+            Direction.LEFT -> posX == 0
+        }
+    }
 
 }
