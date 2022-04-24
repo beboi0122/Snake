@@ -7,6 +7,7 @@ class Snake (val fieldSize: Int){
     private var snake: ArrayList<Body> = ArrayList()
     var length: Int = 3
     var edge = true
+    var block = false
 
     init{
         snake.add(head)

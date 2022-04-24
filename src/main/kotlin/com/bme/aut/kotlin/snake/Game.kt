@@ -24,9 +24,10 @@ class Game : Application() {
     private var fieldSize = 16
     private var loop = false
     private var  edge = true
+    private var speedUp = false
 
     private var WIDTH = fieldSize * 32
-    private var HEIGHT = fieldSize * 32
+    private var HEIGHT = fieldSize * 32 +32
 
     private lateinit var mainScene: Scene
     private lateinit var graphicsContext: GraphicsContext
@@ -67,12 +68,16 @@ class Game : Application() {
         }
     }
     var timeNano: Long = 0
+    var timeNanoLevelUp: Long = 0
+    var elapsedMs: Long =0
+    var levelUp = false
     private fun tickAndRender(currentNanoTime: Long) {
         // the time elapsed since the last frame, in nanoseconds
         // can be used for physics calculation, etc
         val elapsedNanos = currentNanoTime - lastFrameTime
         lastFrameTime = currentNanoTime
         timeNano += elapsedNanos
+        timeNanoLevelUp += elapsedNanos
 
         // clear canvas
         graphicsContext.clearRect(0.0, 0.0, WIDTH.toDouble(), HEIGHT.toDouble())
@@ -81,10 +86,10 @@ class Game : Application() {
 
         updateSnakeDirection()
 
-        if(timeNano >= 200_000_000 - (200_000_000*(field.snake.length*0.03))){
-            field.snake.move()
-            timeNano = 0
-        }
+        snakeSpeed(elapsedNanos)
+        drawLevelUpText()
+
+        drawFpsCounter()
 
         if(field.snake.head.dead && loop){
             field=Field(graphicsContext, fieldSize)
@@ -98,15 +103,49 @@ class Game : Application() {
             graphicsContext.fillText("Press spacebar to return to menu", fieldSize*3.75, fieldSize*21.9)
         }
 
+    }
 
-        // display crude fps counter
-        val elapsedMs = elapsedNanos / 1_000_000
+    private fun snakeSpeed(elapsedNanos: Long){
+        if(speedUp){
+            var level = if(((field.snake.length/15).toInt()+1)>4) 4 else (field.snake.length/15).toInt()+1
+
+            if(timeNano >= 150_000_000 - (200_000_000*((level-1)*0.2))){
+                field.snake.move()
+                timeNano = 0
+                elapsedMs = elapsedNanos / 1_000_000
+            }
+        }else{
+            if(timeNano >= 130_000_000){
+                field.snake.move()
+                timeNano = 0
+                elapsedMs = elapsedNanos / 1_000_000
+
+            }
+        }
+    }
+
+    private fun drawLevelUpText(){
+        if(field.snake.length%15 == 0 && !levelUp){
+            field.snake.block = true
+            levelUp = true
+            timeNanoLevelUp = 0
+        }
+        if(field.snake.length%15 != 0)
+            levelUp = false
+        if(timeNanoLevelUp >= 1_000_000_000)
+            field.snake.block = false
+
+    }
+
+    private fun drawFpsCounter(){
         if (elapsedMs != 0L) {
             graphicsContext.fill = Color.WHITE
             graphicsContext.font = Font.font("Serif",10.0)
             graphicsContext.fillText("${1000 / elapsedMs} fps", 10.0, 10.0)
         }
     }
+
+
 
     private fun updateSnakeDirection() {
         if (currentlyActiveKeys.contains(KeyCode.LEFT)) {
@@ -137,8 +176,8 @@ class Game : Application() {
         comboBox.style = "-fx-font: 15px \"Serif\";"
         comboBox.value = 16
         comboBox.onAction = EventHandler {
-            WIDTH = comboBox.value * 32
-            HEIGHT = comboBox.value * 32
+            WIDTH = comboBox.value * 32 +32
+            HEIGHT = comboBox.value * 32 +32
         }
 
         val startButton = Button()
@@ -174,9 +213,16 @@ class Game : Application() {
         hbox.children.addAll(cbLoop, cbEdge)
         hbox.alignment = Pos.CENTER
 
+        val cbSpeed = CheckBox("Speed up")
+        cbSpeed.font = Font.font ("Serif", 15.0)
+
+        cbSpeed.onAction = EventHandler{
+            speedUp = cbSpeed.isSelected
+        }
+
 
         val vbox = VBox(20.0)
-        vbox.children.addAll(label, comboBox, startButton, hbox)
+        vbox.children.addAll(label, comboBox, startButton, hbox, cbSpeed)
         vbox.alignment = Pos.CENTER;
 
         menuScene = Scene(vbox, 512.0, 512.0)
