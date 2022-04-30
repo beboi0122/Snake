@@ -39,8 +39,10 @@ class Field (val graphicsContext: GraphicsContext, val size: Int) {
                 graphicsContext.fillRect(x.toDouble()*32, 0.0, 32.0, 32.0)
             }
             graphicsContext.fill = Color.BLUE
-            graphicsContext.font = Font.font("Serif",size*2.0)
-            graphicsContext.fillText("Score: ${snake.length}\t\tLevel: ${(snake.length/15).toInt()+1}", size*7.0, size*1.5)
+            graphicsContext.font = Font.font("Serif",32.0)
+            graphicsContext.fillText("Score: ${snake.length}", size*7.0, 28.0)
+            graphicsContext.fillText("Level: ${(snake.length/15).toInt()+1}", size*18.0, 28.0)
+            println(size)
         }else{
             for(x in 0 until size) {
                 graphicsContext.fill = Color.RED
@@ -48,7 +50,7 @@ class Field (val graphicsContext: GraphicsContext, val size: Int) {
             }
             graphicsContext.fill = Color.YELLOW
             graphicsContext.font = Font.font("Serif", FontWeight.BOLD ,size*2.0)
-            graphicsContext.fillText("LEVEL UP", size*12.0, size*1.5)
+            graphicsContext.fillText("LEVEL UP", size*12.0, 28.0)
         }
 
         for(column in 0 until size){

@@ -181,8 +181,8 @@ class Game : Application() {
         comboBox.style = "-fx-font: 15px \"Serif\";"
         comboBox.value = 16
         comboBox.onAction = EventHandler {
-            WIDTH = comboBox.value * 32 +32
-            HEIGHT = comboBox.value * 32 +32
+            WIDTH = comboBox.value * 32
+            HEIGHT = comboBox.value * 32
         }
 
         val fieldSizevb = VBox(0.0)
