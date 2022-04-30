@@ -14,6 +14,7 @@ import javafx.scene.control.CheckBox
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Label
 import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
@@ -168,6 +169,7 @@ class Game : Application() {
 
 
     fun setupMenuScene(){
+        val title: ImageView = ImageView(Image("/title.png"))
 
         val sizeLabel = Label("Size of the field:")
         sizeLabel.font = Font.font("Serif", 20.0)
@@ -182,6 +184,10 @@ class Game : Application() {
             WIDTH = comboBox.value * 32 +32
             HEIGHT = comboBox.value * 32 +32
         }
+
+        val fieldSizevb = VBox(0.0)
+        fieldSizevb.children.addAll(sizeLabel, comboBox)
+        fieldSizevb.alignment = Pos.CENTER
 
         val startButton = Button()
         startButton.text = "Start Game"
@@ -224,7 +230,7 @@ class Game : Application() {
         }
 
         val vbox = VBox(20.0)
-        vbox.children.addAll(comboBox, startButton, hbox, cbSpeed)
+        vbox.children.addAll(title, fieldSizevb, startButton, hbox, cbSpeed)
         vbox.alignment = Pos.CENTER
 
 
