@@ -3,6 +3,7 @@ package com.bme.aut.kotlin.snake
 import javafx.animation.AnimationTimer
 import javafx.application.Application
 import javafx.event.EventHandler
+import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Group
 import javafx.scene.Scene
@@ -12,10 +13,13 @@ import javafx.scene.control.Button
 import javafx.scene.control.CheckBox
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Label
+import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
-import javafx.scene.layout.HBox
-import javafx.scene.layout.VBox
+import javafx.scene.layout.*
 import javafx.scene.paint.Color
+import javafx.scene.paint.CycleMethod
+import javafx.scene.paint.LinearGradient
+import javafx.scene.paint.Stop
 import javafx.scene.text.Font
 import javafx.stage.Stage
 
@@ -102,7 +106,6 @@ class Game : Application() {
             graphicsContext.font = Font.font("Serif",fieldSize*2.0)
             graphicsContext.fillText("Press spacebar to return to menu", fieldSize*3.75, fieldSize*21.9)
         }
-
     }
 
     private fun snakeSpeed(elapsedNanos: Long){
@@ -166,8 +169,8 @@ class Game : Application() {
 
     fun setupMenuScene(){
 
-        val label = Label("Size of the field:")
-        label.font = Font.font("Serif", 20.0)
+        val sizeLabel = Label("Size of the field:")
+        sizeLabel.font = Font.font("Serif", 20.0)
 
 
         val comboBox = ComboBox<Int>()
@@ -220,10 +223,18 @@ class Game : Application() {
             speedUp = cbSpeed.isSelected
         }
 
-
         val vbox = VBox(20.0)
-        vbox.children.addAll(label, comboBox, startButton, hbox, cbSpeed)
-        vbox.alignment = Pos.CENTER;
+        vbox.children.addAll(comboBox, startButton, hbox, cbSpeed)
+        vbox.alignment = Pos.CENTER
+
+
+        val bgfill = LinearGradient(
+            0.0, 0.0, 1.0, 1.0, true,  //sizing
+            CycleMethod.NO_CYCLE,  //cycling
+            Stop(0.0, Color.web("#bcff1b")),  //colors
+            Stop(1.0, Color.web("#5aac1b"))
+        )
+        vbox.background = Background(BackgroundFill(bgfill , CornerRadii.EMPTY, Insets.EMPTY))
 
         menuScene = Scene(vbox, 512.0, 512.0)
     }
