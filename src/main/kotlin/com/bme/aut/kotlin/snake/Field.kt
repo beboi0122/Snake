@@ -42,7 +42,6 @@ class Field (val graphicsContext: GraphicsContext, val size: Int) {
             graphicsContext.font = Font.font("Serif",32.0)
             graphicsContext.fillText("Score: ${snake.length}", size*7.0, 28.0)
             graphicsContext.fillText("Level: ${(snake.length/15).toInt()+1}", size*18.0, 28.0)
-            println(size)
         }else{
             for(x in 0 until size) {
                 graphicsContext.fill = Color.RED
